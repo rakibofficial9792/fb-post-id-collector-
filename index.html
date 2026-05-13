@@ -1,13 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
+<!DOCTYPE html><html lang="en">
+<head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FB Post ID Collector</title>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<style>
+<title>FB Post ID Collector V2</title><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><style>
 body{
 font-family:Arial,sans-serif;
 background:#0f0f0f;
@@ -155,22 +149,10 @@ padding:18px;
 border-radius:14px;
 background:#202020;
 }
-</style>
-</head>
-<body>
-
-<div class="container">
-
-<h1>FB Post ID Collector</h1>
-
-<div class="notice">
+</style></head><body><div class="container"><h1>FB Post ID Collector</h1><div class="notice">
 🔒 Secure System Active <br>
 Supabase Cloud Connected Successfully
-</div>
-
-<div class="login-box" id="loginBox">
-
-<label>Username</label>
+</div><div class="login-box" id="loginBox"><label>Username</label>
 <input type="text" id="username" placeholder="Enter username">
 
 <label>Password</label>
@@ -178,13 +160,7 @@ Supabase Cloud Connected Successfully
 
 <button onclick="login()">
 Login
-</button>
-
-</div>
-
-<div id="mainSystem" style="display:none;">
-
-<label>Access Token</label>
+</button></div><div id="mainSystem" style="display:none;"><label>Access Token</label>
 <input type="password" id="token" placeholder="EAAxxxxxxxx">
 
 <label>Page ID</label>
@@ -197,11 +173,7 @@ Login
 <option value="25">25</option>
 <option value="50">50</option>
 <option value="100" selected>100</option>
-</select>
-
-<div class="tabs">
-
-<button id="tab0"
+</select><div class="tabs"><button id="tab0"
 class="active"
 onclick="switchTab(0)">
 Published
@@ -217,32 +189,20 @@ onclick="switchTab(2)">
 Today
 </button>
 
-</div>
-
-<button onclick="fetchPosts()">
+</div><button onclick="fetchPosts()">
 Collect Post IDs
-</button>
-
-<button class="clear-btn"
+</button><button class="clear-btn"
 onclick="clearSavedData()">
 Clear Saved Token
 </button>
 
-<div id="total" class="total"></div>
-
-<div id="result"></div>
-
-</div>
-
-</div>
-
-<script>
+<div id="total" class="total"></div><div id="result"></div></div></div><script>
 
 const SUPABASE_URL =
 "https://ahorafoietmflijejvra.supabase.co";
 
 const SUPABASE_KEY =
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFob3JhZm9pZXRtZmxpamVqdnJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2NjQ2NjAsImV4cCI6MjA5NDI0MDY2MH0.zb5BlvgpbkkK6S7mc_oJvKhQfewyNEQaRqSsFOb-VDU";
+"YOUR_SUPABASE_ANON_KEY";
 
 const client =
 window.supabase.createClient(
@@ -529,7 +489,5 @@ document.body.removeChild(link);
 
 }
 
-</script>
-
-</body>
+</script></body>
 </html>
