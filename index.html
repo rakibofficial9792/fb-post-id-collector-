@@ -1,16 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>FB Post ID Collector</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
 <style>
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
 
 body{
 font-family:'Inter',sans-serif;
-background:#0b1120;
-background-image:
+background:
 radial-gradient(circle at top left,#1e3a8a33,transparent 30%),
-radial-gradient(circle at bottom right,#06b6d433,transparent 30%);
+radial-gradient(circle at bottom right,#06b6d433,transparent 30%),
+#0b1120;
 color:white;
 padding:20px;
-margin:0;
 min-height:100vh;
 }
 
@@ -28,11 +46,12 @@ box-shadow:0 0 40px rgba(0,0,0,0.5);
 h1{
 text-align:center;
 margin-bottom:25px;
-font-size:32px;
+font-size:34px;
 font-weight:800;
 background:linear-gradient(90deg,#60a5fa,#22d3ee);
 -webkit-background-clip:text;
 -webkit-text-fill-color:transparent;
+letter-spacing:-1px;
 }
 
 .notice{
@@ -40,17 +59,17 @@ background:rgba(34,197,94,0.12);
 border:1px solid rgba(34,197,94,0.4);
 padding:14px;
 border-radius:16px;
-margin-bottom:20px;
+margin-bottom:22px;
 color:#86efac;
 line-height:1.6;
 }
 
 .login-box{
-margin-bottom:25px;
+margin-bottom:24px;
 padding:22px;
 border-radius:20px;
 background:rgba(255,255,255,0.04);
-border:1px solid rgba(255,255,255,0.05);
+border:1px solid rgba(255,255,255,0.06);
 }
 
 label{
@@ -67,7 +86,6 @@ padding:14px;
 margin-bottom:18px;
 border:none;
 border-radius:14px;
-box-sizing:border-box;
 background:#111827;
 color:white;
 border:1px solid rgba(255,255,255,0.08);
@@ -79,7 +97,7 @@ input:focus,
 select:focus{
 outline:none;
 border:1px solid #38bdf8;
-box-shadow:0 0 15px rgba(56,189,248,0.35);
+box-shadow:0 0 0 3px rgba(56,189,248,0.25);
 }
 
 button{
@@ -94,11 +112,12 @@ cursor:pointer;
 font-size:15px;
 font-weight:700;
 transition:0.25s;
+box-shadow:0 4px 16px rgba(59,130,246,0.25);
 }
 
 button:hover{
 transform:translateY(-2px);
-opacity:0.95;
+box-shadow:0 6px 24px rgba(59,130,246,0.35);
 }
 
 .tabs{
@@ -125,13 +144,13 @@ display:flex;
 gap:14px;
 align-items:flex-start;
 border:1px solid rgba(255,255,255,0.06);
-transition:0.25s;
+transition:0.25s ease;
 }
 
 .post:hover{
-transform:translateY(-2px);
+transform:translateY(-3px);
 border-color:#38bdf8;
-box-shadow:0 0 20px rgba(56,189,248,0.15);
+box-shadow:0 0 24px rgba(59,130,246,0.18);
 }
 
 .post img{
@@ -158,10 +177,6 @@ width:auto;
 background:linear-gradient(135deg,#22c55e,#16a34a);
 padding:10px 16px;
 border-radius:12px;
-}
-
-.copy-btn:hover{
-box-shadow:0 0 15px rgba(34,197,94,0.4);
 }
 
 .download-btn{
@@ -193,6 +208,24 @@ font-weight:600;
 
 .open-link:hover{
 text-decoration:underline;
+}
+
+.toast{
+position:fixed;
+bottom:25px;
+right:25px;
+background:#111827;
+padding:14px 18px;
+border-radius:14px;
+border:1px solid rgba(255,255,255,0.08);
+opacity:0;
+pointer-events:none;
+transition:0.3s;
+}
+
+.toast.show{
+opacity:1;
+transform:translateY(-5px);
 }
 
 ::-webkit-scrollbar{
@@ -240,3 +273,398 @@ flex-direction:column;
 }
 
 </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>FB Post ID Collector</h1>
+
+<div class="notice">
+🔒 Secure System Active <br>
+Supabase Cloud Connected Successfully
+</div>
+
+<div class="login-box" id="loginBox">
+
+<label>Username</label>
+<input type="text" id="username" placeholder="Enter username">
+
+<label>Password</label>
+<input type="password" id="password" placeholder="Enter password">
+
+<button onclick="login()">
+Login
+</button>
+
+</div>
+
+<div id="mainSystem" style="display:none;">
+
+<label>Access Token</label>
+<input type="password" id="token" placeholder="EAAxxxxxxxx">
+
+<label>Page ID</label>
+<input type="text" id="pageId" placeholder="123456789">
+
+<label>Limit</label>
+
+<select id="limit">
+<option value="10">10</option>
+<option value="25">25</option>
+<option value="50">50</option>
+<option value="100" selected>100</option>
+</select>
+
+<div class="tabs">
+
+<button id="tab0" class="active" onclick="switchTab(0)">
+Published
+</button>
+
+<button id="tab1" onclick="switchTab(1)">
+Scheduled
+</button>
+
+<button id="tab2" onclick="switchTab(2)">
+Today
+</button>
+
+</div>
+
+<button onclick="fetchPosts()">
+Collect Post IDs
+</button>
+
+<button class="clear-btn" onclick="clearSavedData()">
+Clear Saved Token
+</button>
+
+<div id="total" class="total"></div>
+
+<div id="result"></div>
+
+</div>
+
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+
+const SUPABASE_URL =
+"https://ahorafoietmflijejvra.supabase.co";
+
+const SUPABASE_KEY =
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFob3JhZm9pZXRtZmxpamVqdnJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2NjQ2NjAsImV4cCI6MjA5NDI0MDY2MH0.zb5BlvgpbkkK6S7mc_oJvKhQfewyNEQaRqSsFOb-VDU";
+
+const client =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+let currentTab = 0;
+let allPosts = [];
+
+window.onload = function(){
+
+const logged =
+localStorage.getItem('logged_in');
+
+const savedToken =
+localStorage.getItem('fb_token');
+
+const savedPageId =
+localStorage.getItem('fb_page_id');
+
+if(savedToken){
+document.getElementById('token').value = savedToken;
+}
+
+if(savedPageId){
+document.getElementById('pageId').value = savedPageId;
+}
+
+if(logged === 'yes'){
+
+document.getElementById('mainSystem').style.display = 'block';
+document.getElementById('loginBox').style.display = 'none';
+
+}
+
+};
+
+async function login(){
+
+const username =
+document.getElementById('username').value.trim();
+
+const password =
+document.getElementById('password').value.trim();
+
+if(!username || !password){
+alert('Username & Password required');
+return;
+}
+
+const { data, error } =
+await client
+.from('owners')
+.select('*')
+.eq('username', username)
+.eq('password', password);
+
+if(error){
+alert('Database Error');
+return;
+}
+
+if(data.length > 0){
+
+localStorage.setItem('logged_in', 'yes');
+
+showToast('✅ Login Success');
+
+document.getElementById('mainSystem').style.display = 'block';
+document.getElementById('loginBox').style.display = 'none';
+
+}else{
+alert('❌ Invalid Login');
+}
+
+}
+
+function switchTab(tab){
+
+currentTab = tab;
+
+document.querySelectorAll('.tabs button')
+.forEach((btn,index)=>{
+
+btn.classList.toggle('active', index===tab);
+
+});
+
+}
+
+function escapeHtml(text){
+
+return String(text)
+.replace(/&/g,'&amp;')
+.replace(/</g,'&lt;')
+.replace(/>/g,'&gt;');
+
+}
+
+async function fetchPosts(){
+
+const token =
+document.getElementById('token').value.trim();
+
+const pageId =
+document.getElementById('pageId').value.trim();
+
+const limit =
+document.getElementById('limit').value;
+
+const resultDiv =
+document.getElementById('result');
+
+const totalDiv =
+document.getElementById('total');
+
+if(!token || !pageId){
+alert('Token & Page ID লাগবে');
+return;
+}
+
+localStorage.setItem('fb_token', token);
+localStorage.setItem('fb_page_id', pageId);
+
+resultDiv.innerHTML =
+'<div class="loading">⏳ Loading...</div>';
+
+try{
+
+let endpoint = 'feed';
+
+if(currentTab === 1){
+endpoint = 'scheduled_posts';
+}
+
+const url =
+`https://graph.facebook.com/v20.0/${pageId}/${endpoint}?fields=id,message,full_picture,permalink_url,created_time&limit=${limit}&access_token=${token}`;
+
+const response = await fetch(url);
+
+const data = await response.json();
+
+if(data.error){
+resultDiv.innerHTML = '❌ ' + data.error.message;
+return;
+}
+
+let posts = data.data || [];
+
+if(currentTab === 2){
+
+const today = new Date();
+
+posts = posts.filter(post=>{
+
+if(!post.created_time) return false;
+
+const d = new Date(post.created_time);
+
+return (
+d.getDate() === today.getDate() &&
+d.getMonth() === today.getMonth() &&
+d.getFullYear() === today.getFullYear()
+);
+
+});
+
+}
+
+allPosts = [];
+
+let html = '';
+
+for(const post of posts){
+
+const caption =
+post.message
+? escapeHtml(post.message.substring(0,120))
+: 'No Caption';
+
+const image = post.full_picture || '';
+
+allPosts.push(post);
+
+html += `
+<div class="post">
+
+${image ? `<img src="${image}">` : ''}
+
+<div class="post-info">
+
+<div class="caption">
+${caption}
+</div>
+
+<strong>${post.id}</strong>
+
+<br><br>
+
+<a class="open-link"
+href="${post.permalink_url || '#'}"
+target="_blank">
+Open Post
+</a>
+
+</div>
+
+<button class="copy-btn"
+onclick="copyPostId('${post.id}')">
+Copy
+</button>
+
+</div>
+`;
+
+}
+
+html += `
+<button
+class="download-btn"
+onclick="downloadCSV()">
+Download CSV
+</button>
+`;
+
+resultDiv.innerHTML = html;
+
+totalDiv.innerHTML =
+'✅ Total Posts: ' + posts.length;
+
+}catch(error){
+resultDiv.innerHTML = '❌ Request failed';
+}
+
+}
+
+function copyPostId(id){
+
+navigator.clipboard.writeText(id);
+
+showToast('✅ Copied: ' + id);
+
+}
+
+function clearSavedData(){
+
+localStorage.removeItem('fb_token');
+localStorage.removeItem('fb_page_id');
+localStorage.removeItem('logged_in');
+
+showToast('✅ Cleared');
+
+setTimeout(()=>{
+location.reload();
+},1000);
+
+}
+
+function showToast(msg){
+
+const toast =
+document.getElementById('toast');
+
+toast.innerHTML = msg;
+
+toast.classList.add('show');
+
+setTimeout(()=>{
+toast.classList.remove('show');
+},2500);
+
+}
+
+function downloadCSV(){
+
+if(allPosts.length === 0) return;
+
+let csv = 'Post ID,Message\n';
+
+allPosts.forEach(post=>{
+
+csv += `"${post.id}","${(post.message || '').replace(/"/g,'')}"\n`;
+
+});
+
+const blob = new Blob([csv], {
+type:'text/csv;charset=utf-8;'
+});
+
+const url = URL.createObjectURL(blob);
+
+const link = document.createElement('a');
+
+link.href = url;
+link.download = 'posts.csv';
+
+document.body.appendChild(link);
+link.click();
+document.body.removeChild(link);
+
+showToast('✅ CSV Downloaded');
+
+}
+
+</script>
+
+</body>
+</html>
