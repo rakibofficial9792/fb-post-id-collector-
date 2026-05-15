@@ -100,10 +100,11 @@ border:1px solid #38bdf8;
 box-shadow:0 0 0 3px rgba(56,189,248,0.25);
 }
 
+/* ✅ FIXED: Button spacing বাড়ানো হয়েছে */
 button{
 width:100%;
-padding:14px;
-margin-bottom:16px;
+padding:16px;
+margin-bottom:24px; /* ছিল 16px, এখন 24px */
 border:none;
 border-radius:14px;
 background:linear-gradient(135deg,#2563eb,#06b6d4);
@@ -122,13 +123,14 @@ box-shadow:0 6px 24px rgba(59,130,246,0.35);
 
 .tabs{
 display:flex;
-gap:10px;
-margin-bottom:22px;
+gap:14px; /* ছিল 10px, এখন 14px */
+margin-bottom:28px; /* ছিল 22px, এখন 28px */
 }
 
 .tabs button{
 background:#111827;
 border:1px solid rgba(255,255,255,0.08);
+margin-bottom:0; /* tabs-এর ভেতর আলাদা margin দরকার নেই */
 }
 
 .tabs button.active{
@@ -177,10 +179,12 @@ width:auto;
 background:linear-gradient(135deg,#22c55e,#16a34a);
 padding:10px 16px;
 border-radius:12px;
+margin-bottom:0;
 }
 
 .download-btn{
 background:linear-gradient(135deg,#22c55e,#16a34a);
+margin-top:8px;
 }
 
 .clear-btn{
